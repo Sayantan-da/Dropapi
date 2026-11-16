@@ -1,0 +1,11 @@
+order_id,customer,city,product,quantity,price,order_date
+1001,Asha Roy,Kolkata,Notebook,3,45.50,2026-11-01
+1002,Ravi Das,Kolkata,Pen Set,10,12.00,2026-11-01
+1003,Meera Shah,Mumbai,Backpack,1,899.00,2026-11-02
+1004,Karan Mehta,Delhi,Notebook,5,45.50,2026-11-02
+1005,Sana Khan,Pune,Desk Lamp,2,350.00,2026-11-03
+1006,Arjun Nair,Chennai,Pen Set,4,12.00,2026-11-03
+1007,Priya Singh,Kolkata,Backpack,2,899.00,2026-11-04
+1008,Dev Patel,Ahmedabad,Notebook,8,45.50,2026-11-04
+1009,Neha Gupta,Delhi,Desk Lamp,1,350.00,2026-11-05
+1010,Rohan Bose,Kolkata,Pen Set,6,12.00,2026-11-05

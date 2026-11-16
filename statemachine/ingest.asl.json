@@ -1,0 +1,134 @@
+{
+  "Comment": "DropAPI ingest workflow (Milestone 1)",
+  "QueryLanguage": "JSONata",
+  "StartAt": "Prepare",
+  "States": {
+    "Prepare": {
+      "Type": "Pass",
+      "Assign": {
+        "datasetId": "{% $lowercase($split($split($states.input.detail.object.key, '/')[-1], '.')[0]) %}",
+        "bucket": "{% $states.input.detail.bucket.name %}",
+        "key": "{% $states.input.detail.object.key %}"
+      },
+      "Next": "InitStatus"
+    },
+    "InitStatus": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::dynamodb:putItem",
+      "Arguments": {
+        "TableName": "${DatasetsTable}",
+        "Item": {
+          "dataset_id": { "S": "{% $datasetId %}" },
+          "status": { "S": "PROCESSING" },
+          "source_key": { "S": "{% $key %}" },
+          "started_at": { "S": "{% $now() %}" },
+          "execution": { "S": "{% $states.context.Execution.Id %}" }
+        }
+      },
+      "Next": "LoadData"
+    },
+    "LoadData": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::lambda:invoke",
+      "Arguments": {
+        "FunctionName": "${LoadFunctionArn}",
+        "Payload": {
+          "dataset_id": "{% $datasetId %}",
+          "bucket": "{% $bucket %}",
+          "key": "{% $key %}"
+        }
+      },
+      "Output": "{% $states.result.Payload %}",
+      "Assign": {
+        "errorMessage": "{% $states.result.Payload.error %}"
+      },
+      "Retry": [
+        {
+          "ErrorEquals": [
+            "Lambda.ServiceException",
+            "Lambda.AWSLambdaException",
+            "Lambda.SdkClientException",
+            "Lambda.TooManyRequestsException"
+          ],
+          "IntervalSeconds": 2,
+          "MaxAttempts": 3,
+          "BackoffRate": 2
+        }
+      ],
+      "Catch": [
+        {
+          "ErrorEquals": ["States.ALL"],
+          "Assign": {
+            "errorMessage": "{% 'Unexpected error: ' & $states.errorOutput.Error %}"
+          },
+          "Next": "MarkFailed"
+        }
+      ],
+      "Next": "CheckResult"
+    },
+    "CheckResult": {
+      "Type": "Choice",
+      "Choices": [
+        {
+          "Condition": "{% $states.input.ok = true %}",
+          "Next": "MarkReady"
+        }
+      ],
+      "Default": "MarkFailed"
+    },
+    "MarkReady": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::dynamodb:updateItem",
+      "Arguments": {
+        "TableName": "${DatasetsTable}",
+        "Key": { "dataset_id": { "S": "{% $datasetId %}" } },
+        "UpdateExpression": "SET #st = :s, #rc = :r, #sj = :j, #pk = :k, #fa = :f",
+        "ExpressionAttributeNames": {
+          "#st": "status",
+          "#rc": "row_count",
+          "#sj": "schema_json",
+          "#pk": "primary_key",
+          "#fa": "finished_at"
+        },
+        "ExpressionAttributeValues": {
+          ":s": { "S": "READY" },
+          ":r": { "N": "{% $string($states.input.row_count) %}" },
+          ":j": { "S": "{% $string($states.input.schema) %}" },
+          ":k": { "S": "{% $states.input.primary_key %}" },
+          ":f": { "S": "{% $now() %}" }
+        }
+      },
+      "Catch": [
+        {
+          "ErrorEquals": ["States.ALL"],
+          "Assign": {
+            "errorMessage": "{% 'Could not mark dataset ready: ' & $states.errorOutput.Error %}"
+          },
+          "Next": "MarkFailed"
+        }
+      ],
+      "End": true
+    },
+    "MarkFailed": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::dynamodb:updateItem",
+      "Arguments": {
+        "TableName": "${DatasetsTable}",
+        "Key": { "dataset_id": { "S": "{% $datasetId %}" } },
+        "UpdateExpression": "SET #s = :s, #e = :e, finished_at = :f",
+        "ExpressionAttributeNames": { "#s": "status", "#e": "error" },
+        "ExpressionAttributeValues": {
+          ":s": { "S": "FAILED" },
+          ":e": { "S": "{% $errorMessage %}" },
+          ":f": { "S": "{% $now() %}" }
+        }
+      },
+      "Next": "DatasetRejected"
+    },
+    "DatasetRejected": {
+      "Type": "Fail",
+      "Error": "DatasetRejected",
+      "Cause": "{% $errorMessage %}"
+    }
+  }
+}

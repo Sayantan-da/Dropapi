@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>DropAPI: drop a CSV, get an API</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swagger-ui-dist@5.17.14/swagger-ui.css">
+<style>
+:root{--bg:#f3f6f8;--ink:#16202a;--mute:#5b6b79;--line:#cfd9e1;--cell:#fff;--acc:#0b6e8a;--ok:#1b7f4b;--bad:#b3261e;--warn:#9a6700}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 "Segoe UI",system-ui,sans-serif}
+main{max-width:1000px;margin:0 auto;padding:32px 20px 64px}
+h1{font-size:2rem;margin:0 0 4px;letter-spacing:-.02em}
+h2{font-size:1.15rem;margin:36px 0 10px}
+p{margin:0 0 10px;max-width:68ch}
+.sub{color:var(--mute)}
+.box{background:var(--cell);border:1px solid var(--line);border-radius:6px;padding:14px}
+code,pre{font-family:Consolas,"Cascadia Mono",monospace;font-size:.88rem}
+pre{margin:0;white-space:pre-wrap;word-break:break-word}
+.hint{margin-top:14px;padding:10px 14px;border-left:3px solid var(--acc);background:var(--cell)}
+#datasets{display:flex;flex-wrap:wrap;gap:10px}
+.ds{border:1px solid var(--line);background:var(--cell);border-radius:6px;padding:10px 14px;text-align:left;font:inherit;color:inherit;cursor:pointer;min-width:190px}
+.ds[aria-pressed=true]{border-color:var(--acc);box-shadow:inset 0 0 0 1px var(--acc)}
+.ds b{display:block}
+.st{font-size:.85rem;font-weight:600}
+.READY{color:var(--ok)}.FAILED{color:var(--bad)}.PROCESSING{color:var(--warn)}
+.err{display:block;color:var(--bad);font-size:.85rem;margin-top:4px}
+form{display:flex;gap:8px;flex-wrap:wrap}
+input[type=text]{flex:1 1 320px;padding:10px 12px;font:inherit;border:1px solid var(--line);border-radius:6px}
+button.go{padding:10px 18px;font:inherit;font-weight:600;color:#fff;background:var(--acc);border:0;border-radius:6px;cursor:pointer}
+button:focus-visible,input:focus-visible{outline:3px solid #8cc9dc;outline-offset:2px}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0}
+.chip{border:1px solid var(--line);background:var(--cell);border-radius:99px;padding:3px 12px;font:inherit;font-size:.88rem;cursor:pointer}
+.plan{margin-top:12px;border-left:3px solid var(--acc)}
+.plan span{display:block;color:var(--mute);font-size:.85rem;margin-bottom:4px}
+.note{color:var(--warn);font-size:.9rem;margin-top:6px}
+.wrap{overflow-x:auto;margin-top:12px}
+table{border-collapse:collapse;width:100%;background:var(--cell);font-variant-numeric:tabular-nums}
+th,td{border:1px solid var(--line);padding:6px 10px;text-align:left;font-size:.92rem;white-space:nowrap}
+th{background:#e7eef3}
+td.n{text-align:right}
+.cols{display:flex;flex-wrap:wrap;gap:6px}
+.cols span{border:1px solid var(--line);background:var(--cell);border-radius:4px;padding:2px 8px;font-size:.88rem}
+.cols i{color:var(--mute);font-style:normal}
+#swagger{background:#fff;border:1px solid var(--line);border-radius:6px;margin-top:10px}
+</style>
+</head>
+<body>
+<main>
+<h1>DropAPI</h1>
+<p class="sub">Drop a CSV into S3. A Step Functions workflow checks it, loads it, and gives you a live API and a plain-English question box. No servers, no pipeline.</p>
+<div class="hint">To add a dataset, run:
+<pre>aws s3 cp mydata.csv s3://dropapi-uploadbucket-om7mtkx1okwn/uploads/mydata.csv</pre>
+The status below updates by itself. Use letters, numbers, - or _ in the file name.</div>
+
+<h2>Datasets</h2>
+<div id="datasets" aria-live="polite"><p class="sub">Loading datasets…</p></div>
+
+<section id="work" hidden>
+<h2>Ask <span id="dsname"></span> a question</h2>
+<form id="askform">
+<input type="text" id="q" maxlength="300" aria-label="Your question" placeholder="Type a question in plain English">
+<button class="go" type="submit">Ask</button>
+</form>
+<div class="chips" id="chips"></div>
+<div id="answer" aria-live="polite"></div>
+
+<h2>Columns found</h2>
+<div class="cols" id="cols"></div>
+
+<h2>First rows</h2>
+<div class="wrap" id="rows"></div>
+
+<h2>API docs for this dataset</h2>
+<p class="sub">Generated from the detected schema. Use Try it out to call the live API.</p>
+<div id="swagger"></div>
+</section>
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/swagger-ui-dist@5.17.14/swagger-ui-bundle.js"></script>
+<script>
+const API = "https://3falo8ba70.execute-api.ap-south-1.amazonaws.com";
+const $ = id => document.getElementById(id);
+let current = null, pollTimer = null;
+
+function el(tag, text, cls) {
+  const e = document.createElement(tag);
+  if (text != null) e.textContent = text;
+  if (cls) e.className = cls;
+  return e;
+}
+async function get(path) {
+  const res = await fetch(API + path);
+  const body = await res.json();
+  if (!res.ok) throw new Error(body.error || "Request failed (" + res.status + ")");
+  return body;
+}
+function renderTable(rows) {
+  if (!rows.length) return el("p", "No matching rows.", "sub");
+  const keys = Object.keys(rows[0]);
+  const t = el("table"), head = el("tr");
+  keys.forEach(k => head.appendChild(el("th", k)));
+  t.appendChild(head);
+  rows.forEach(r => {
+    const tr = el("tr");
+    keys.forEach(k => {
+      const v = r[k];
+      tr.appendChild(el("td", v === null || v === undefined ? "" : String(v),
+        typeof v === "number" ? "n" : ""));
+    });
+    t.appendChild(tr);
+  });
+  return t;
+}
+
+async function loadDatasets() {
+  clearTimeout(pollTimer);
+  let data;
+  try { data = await get("/datasets"); }
+  catch (e) { $("datasets").replaceChildren(el("p", "Could not reach the API: " + e.message, "err")); return; }
+  const box = $("datasets");
+  box.replaceChildren();
+  if (!data.datasets.length) box.appendChild(el("p", "No datasets yet. Upload a CSV with the command above.", "sub"));
+  data.datasets.forEach(d => {
+    const b = el("button", null, "ds");
+    b.type = "button";
+    b.setAttribute("aria-pressed", String(d.dataset_id === current));
+    b.appendChild(el("b", d.dataset_id));
+    b.appendChild(el("span", d.status + (d.row_count ? " · " + d.row_count + " rows" : ""), "st " + d.status));
+    if (d.error) b.appendChild(el("span", d.error, "err"));
+    if (d.status === "READY") b.onclick = () => select(d.dataset_id);
+    box.appendChild(b);
+  });
+  if (data.datasets.some(d => d.status === "PROCESSING")) pollTimer = setTimeout(loadDatasets, 3000);
+}
+
+async function select(id) {
+  current = id;
+  $("work").hidden = false;
+  $("dsname").textContent = id;
+  $("answer").replaceChildren();
+  $("q").value = "";
+  loadDatasets();
+  try {
+    const [detail, items] = await Promise.all([get("/datasets/" + id), get("/" + id + "/items?limit=10")]);
+    const cols = $("cols");
+    cols.replaceChildren();
+    detail.columns.forEach(c => {
+      const s = el("span", c.name + " ");
+      s.appendChild(el("i", c.type + (c.name === detail.primary_key ? ", key" : "")));
+      cols.appendChild(s);
+    });
+    $("rows").replaceChildren(renderTable(items.items));
+    makeChips(detail.columns, detail.primary_key);
+  } catch (e) { $("rows").replaceChildren(el("p", e.message, "err")); }
+  window.SwaggerUIBundle({ url: API + "/" + id + "/openapi.json", dom_id: "#swagger" });
+}
+
+function makeChips(columns, pk) {
+  const chips = $("chips"), ideas = [];
+  const text = columns.find(c => c.type === "string" && c.values);
+  const num = columns.find(c => (c.type === "integer" || c.type === "number") && c.name !== pk);
+  if (text) ideas.push("rows in " + text.values[0]);
+  if (num) { ideas.push(num.name + " over 10"); ideas.push("top 3 by " + num.name); }
+  const bool = columns.find(c => c.type === "boolean");
+  if (bool) ideas.push("only " + bool.name);
+  chips.replaceChildren();
+  ideas.forEach(t => {
+    const b = el("button", t, "chip");
+    b.type = "button";
+    b.onclick = () => { $("q").value = t; ask(); };
+    chips.appendChild(b);
+  });
+}
+
+async function ask() {
+  const q = $("q").value.trim();
+  const out = $("answer");
+  if (!q) return;
+  out.replaceChildren(el("p", "Thinking…", "sub"));
+  try {
+    const r = await get("/" + current + "/ask?q=" + encodeURIComponent(q));
+    out.replaceChildren();
+    const plan = el("div", null, "box plan");
+    plan.appendChild(el("span", "Filter generated from your question (nothing else is ever run)"));
+    plan.appendChild(el("pre", JSON.stringify(r.generated_filter, null, 2)));
+    out.appendChild(plan);
+    r.notes.forEach(n => out.appendChild(el("p", n, "note")));
+    out.appendChild(el("p", r.count + " matching row" + (r.count === 1 ? "" : "s"), "sub"));
+    const wrap = el("div", null, "wrap");
+    wrap.appendChild(renderTable(r.rows));
+    out.appendChild(wrap);
+  } catch (e) { out.replaceChildren(el("p", e.message, "err")); }
+}
+
+$("askform").addEventListener("submit", ev => { ev.preventDefault(); ask(); });
+loadDatasets();
+</script>
+</body>
+</html>

@@ -1,0 +1,7 @@
+customer_id,name,email,age,active,signup_date,city,lifetime_value
+C001,Asha Roy,asha@example.com,29,true,2025-03-14,Kolkata,1250.75
+C002,Ravi Das,,41,false,2024-11-02,Kolkata,
+C003,Meera Shah,meera@example.com,,true,2026-01-20,Mumbai,430
+C004,Karan Mehta,karan@example.com,35,true,,Delhi,980.5
+C005,Sana Khan,sana@example.com,52,false,2023-07-09,Pune,15
+C006,Arjun Nair,arjun@example.com,23,true,2026-05-30,Chennai,

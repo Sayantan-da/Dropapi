@@ -1,0 +1,9 @@
+.aws-sam/
+**/.aws-sam/
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.env
+.env.*
+!.env.example
