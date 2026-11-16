@@ -453,6 +453,7 @@ def info():
         "endpoints": [
             "GET /datasets",
             "GET /datasets/{id}",
+            "POST /upload-url",
             "GET /{id}/items?column=value&limit=10&sort=column&order=desc",
             "GET /{id}/items/{key}",
             "GET /{id}/ask?q=customers in Kolkata older than 30",
@@ -491,8 +492,8 @@ def lambda_handler(event, context):
     if event["requestContext"]["http"]["method"] == "OPTIONS":
         return {"statusCode": 204,
                 "headers": {"Access-Control-Allow-Origin": "*",
-                            "Access-Control-Allow-Methods": "GET,OPTIONS",
-                            "Access-Control-Allow-Headers": "Content-Type"},
+                            "Access-Control-Allow-Methods": "GET,POST,OPTIONS",
+                            "Access-Control-Allow-Headers": "Content-Type,X-Api-Key"},
                 "body": ""}
 
     started = time.time()

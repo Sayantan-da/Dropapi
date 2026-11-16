@@ -14,6 +14,20 @@ Resources:
       NotificationConfiguration:
         EventBridgeConfiguration:
           EventBridgeEnabled: true
+      CorsConfiguration:
+        CorsRules:
+          - AllowedHeaders:
+              - "*"
+            AllowedMethods:
+              - POST
+            AllowedOrigins:
+              - "*"
+      LifecycleConfiguration:
+        Rules:
+          - Id: ExpireUploadsAfterSevenDays
+            Prefix: uploads/
+            Status: Enabled
+            ExpirationInDays: 7
 
   DatasetsTable:
     Type: AWS::DynamoDB::Table
@@ -90,6 +104,16 @@ Resources:
   HttpApi:
     Type: AWS::Serverless::HttpApi
     Properties:
+      CorsConfiguration:
+        AllowHeaders:
+          - content-type
+          - x-api-key
+        AllowMethods:
+          - GET
+          - POST
+          - OPTIONS
+        AllowOrigins:
+          - "*"
       DefaultRouteSettings:
         ThrottlingBurstLimit: 20
         ThrottlingRateLimit: 10
@@ -124,6 +148,37 @@ Resources:
             ApiId: !Ref HttpApi
             Path: /{proxy+}
             Method: ANY
+
+  UploadUrlFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: src/upload/
+      Handler: upload.lambda_handler
+      Runtime: python3.12
+      Timeout: 5
+      MemorySize: 128
+      Environment:
+        Variables:
+          UPLOAD_BUCKET: !Ref UploadBucket
+          DATASETS_TABLE: !Ref DatasetsTable
+      Policies:
+        - Version: "2012-10-17"
+          Statement:
+            - Effect: Allow
+              Action:
+                - s3:PutObject
+              Resource: !Sub "${UploadBucket.Arn}/uploads/*"
+            - Effect: Allow
+              Action:
+                - dynamodb:GetItem
+              Resource: !GetAtt DatasetsTable.Arn
+      Events:
+        UploadUrl:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref HttpApi
+            Path: /upload-url
+            Method: POST
 
 Outputs:
   UploadBucketName:

@@ -84,7 +84,7 @@ aws s3 cp samples/clean_sales.csv \
 
 The dataset ID comes from the file name: this example creates `clean_sales`. Processing is asynchronous; check `GET /datasets` until its status is `READY`.
 
-The CSV must be UTF-8, have a header row with unique non-empty column names, and contain at least one data row. Current limits are **10 MiB**, **50,000 rows**, and **100 columns**. Filenames may use letters, numbers, hyphens, and underscores, and must start with a letter or number.
+The CSV must be UTF-8, have a header row with unique non-empty column names, and contain at least one data row. Current limits are **10 MiB**, **50,000 rows**, and **100 columns**. Filenames must end in `.csv`; their basename may use letters, numbers, hyphens, and underscores, must start with a letter or number, and may be at most 63 characters.
 
 ## API
 
@@ -95,6 +95,7 @@ Set `API_URL` to the `ApiUrl` stack output, then try these endpoints:
 | `GET /` | Service information and route list |
 | `GET /datasets` | List datasets and processing status |
 | `GET /datasets/{id}` | Dataset metadata and inferred schema |
+| `POST /upload-url` | Get a short-lived presigned form for browser upload |
 | `GET /{id}/items` | Filter and page through rows |
 | `GET /{id}/items/{key}` | Fetch one row by its inferred primary key |
 | `GET /{id}/ask?q=...` | Turn a plain-English question into a query |
@@ -111,9 +112,11 @@ curl --get "$API_URL/clean_sales/ask" \
 
 Filters use a column name for equality by default, or an operator suffix such as `price__gte=100`. Supported operators depend on the inferred column type: numeric and date columns support comparisons; strings support equality, `contains`, and `begins_with`; booleans support equality. Results default to 50 rows and can be limited to 100. The `/openapi.json` endpoint can be loaded in Swagger UI to explore a dataset interactively.
 
-## Browser UI
+## Browser upload
 
-`frontend/index.html` is a static, single-file UI. It lists datasets, shows inferred columns and sample rows, offers suggested questions, and embeds Swagger UI. Before using it with your own deployment, update the API URL and upload-bucket command in the page to match your stack outputs.
+`frontend/index.html` is a static, single-file UI. Set its `API` constant to your stack's `ApiUrl` output, open the page, choose a CSV, and select **Upload CSV**. The browser requests `POST /upload-url`, uploads directly to S3 using the returned presigned form, and polls the dataset status. The upload endpoint accepts `{"filename":"<name>.csv"}` and returns a five-minute presigned POST; the S3 key is always set server-side under `uploads/`. Existing dataset IDs return `409`.
+
+Uploads must be non-empty and no larger than **10 MiB**. The loader additionally limits files to 50,000 rows and 100 columns. Dataset IDs are the lowercased filename basenames; basenames longer than 63 characters are rejected to match the existing loader. Files under `uploads/` expire after seven days.
 
 ## Repository layout
 

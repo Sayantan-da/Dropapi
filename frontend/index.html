@@ -1,200 +1,1972 @@
-<!DOCTYPE html>
+﻿<!doctype html>
 <html lang="en">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>DropAPI: drop a CSV, get an API</title>
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swagger-ui-dist@5.17.14/swagger-ui.css">
-<style>
-:root{--bg:#f3f6f8;--ink:#16202a;--mute:#5b6b79;--line:#cfd9e1;--cell:#fff;--acc:#0b6e8a;--ok:#1b7f4b;--bad:#b3261e;--warn:#9a6700}
-*{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 "Segoe UI",system-ui,sans-serif}
-main{max-width:1000px;margin:0 auto;padding:32px 20px 64px}
-h1{font-size:2rem;margin:0 0 4px;letter-spacing:-.02em}
-h2{font-size:1.15rem;margin:36px 0 10px}
-p{margin:0 0 10px;max-width:68ch}
-.sub{color:var(--mute)}
-.box{background:var(--cell);border:1px solid var(--line);border-radius:6px;padding:14px}
-code,pre{font-family:Consolas,"Cascadia Mono",monospace;font-size:.88rem}
-pre{margin:0;white-space:pre-wrap;word-break:break-word}
-.hint{margin-top:14px;padding:10px 14px;border-left:3px solid var(--acc);background:var(--cell)}
-#datasets{display:flex;flex-wrap:wrap;gap:10px}
-.ds{border:1px solid var(--line);background:var(--cell);border-radius:6px;padding:10px 14px;text-align:left;font:inherit;color:inherit;cursor:pointer;min-width:190px}
-.ds[aria-pressed=true]{border-color:var(--acc);box-shadow:inset 0 0 0 1px var(--acc)}
-.ds b{display:block}
-.st{font-size:.85rem;font-weight:600}
-.READY{color:var(--ok)}.FAILED{color:var(--bad)}.PROCESSING{color:var(--warn)}
-.err{display:block;color:var(--bad);font-size:.85rem;margin-top:4px}
-form{display:flex;gap:8px;flex-wrap:wrap}
-input[type=text]{flex:1 1 320px;padding:10px 12px;font:inherit;border:1px solid var(--line);border-radius:6px}
-button.go{padding:10px 18px;font:inherit;font-weight:600;color:#fff;background:var(--acc);border:0;border-radius:6px;cursor:pointer}
-button:focus-visible,input:focus-visible{outline:3px solid #8cc9dc;outline-offset:2px}
-.chips{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0}
-.chip{border:1px solid var(--line);background:var(--cell);border-radius:99px;padding:3px 12px;font:inherit;font-size:.88rem;cursor:pointer}
-.plan{margin-top:12px;border-left:3px solid var(--acc)}
-.plan span{display:block;color:var(--mute);font-size:.85rem;margin-bottom:4px}
-.note{color:var(--warn);font-size:.9rem;margin-top:6px}
-.wrap{overflow-x:auto;margin-top:12px}
-table{border-collapse:collapse;width:100%;background:var(--cell);font-variant-numeric:tabular-nums}
-th,td{border:1px solid var(--line);padding:6px 10px;text-align:left;font-size:.92rem;white-space:nowrap}
-th{background:#e7eef3}
-td.n{text-align:right}
-.cols{display:flex;flex-wrap:wrap;gap:6px}
-.cols span{border:1px solid var(--line);background:var(--cell);border-radius:4px;padding:2px 8px;font-size:.88rem}
-.cols i{color:var(--mute);font-style:normal}
-#swagger{background:#fff;border:1px solid var(--line);border-radius:6px;margin-top:10px}
-</style>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light dark">
+  <title>DropAPI â€” Your CSV, ready to query</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swagger-ui-dist@5.17.14/swagger-ui.css">
+  <style>
+    :root {
+      color-scheme: light;
+      --bg: #f3f7f8;
+      --surface: #ffffff;
+      --surface-raised: #ffffff;
+      --surface-soft: #edf3f5;
+      --text: #152832;
+      --muted: #526873;
+      --line: #d6e1e5;
+      --accent: #0b6e8a;
+      --accent-hover: #07596f;
+      --accent-ink: #ffffff;
+      --accent-soft: #e2f1f4;
+      --success: #17613e;
+      --success-soft: #e5f4eb;
+      --warning: #805300;
+      --warning-soft: #fff3d4;
+      --danger: #a12d28;
+      --danger-soft: #fde9e7;
+      --focus: #087c9d;
+      --table-head: #eaf1f3;
+      --overlay: rgb(5 15 19 / 60%);
+      --shadow: 0 16px 42px rgb(25 56 68 / 9%);
+      --shadow-soft: 0 5px 18px rgb(25 56 68 / 7%);
+      --radius-sm: 10px;
+      --radius-md: 14px;
+      --radius-lg: 20px;
+      --space-1: 4px;
+      --space-2: 8px;
+      --space-3: 12px;
+      --space-4: 16px;
+      --space-5: 20px;
+      --space-6: 24px;
+      --space-8: 32px;
+      --space-10: 40px;
+      --space-12: 48px;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root:not([data-theme="light"]) {
+        color-scheme: dark;
+        --bg: #10191d;
+        --surface: #172328;
+        --surface-raised: #1d2b31;
+        --surface-soft: #223238;
+        --text: #edf5f6;
+        --muted: #b6c6cb;
+        --line: #34474e;
+        --accent: #69c5d8;
+        --accent-hover: #86d4e4;
+        --accent-ink: #09262d;
+        --accent-soft: #1b3c45;
+        --success: #79d4a0;
+        --success-soft: #18392a;
+        --warning: #f0c66c;
+        --warning-soft: #40351e;
+        --danger: #ff9a94;
+        --danger-soft: #482b2a;
+        --focus: #82d8e9;
+        --table-head: #24353b;
+        --overlay: rgb(0 0 0 / 68%);
+        --shadow: 0 18px 48px rgb(0 0 0 / 32%);
+        --shadow-soft: 0 6px 20px rgb(0 0 0 / 24%);
+      }
+    }
+
+    :root[data-theme="dark"] {
+      color-scheme: dark;
+      --bg: #10191d;
+      --surface: #172328;
+      --surface-raised: #1d2b31;
+      --surface-soft: #223238;
+      --text: #edf5f6;
+      --muted: #b6c6cb;
+      --line: #34474e;
+      --accent: #69c5d8;
+      --accent-hover: #86d4e4;
+      --accent-ink: #09262d;
+      --accent-soft: #1b3c45;
+      --success: #79d4a0;
+      --success-soft: #18392a;
+      --warning: #f0c66c;
+      --warning-soft: #40351e;
+      --danger: #ff9a94;
+      --danger-soft: #482b2a;
+      --focus: #82d8e9;
+      --table-head: #24353b;
+      --overlay: rgb(0 0 0 / 68%);
+      --shadow: 0 18px 48px rgb(0 0 0 / 32%);
+      --shadow-soft: 0 6px 20px rgb(0 0 0 / 24%);
+    }
+
+    :root[data-theme="light"] {
+      color-scheme: light;
+    }
+
+    * { box-sizing: border-box; }
+
+    [hidden] { display: none !important; }
+
+    body {
+      min-width: 320px;
+      min-height: 100vh;
+      margin: 0;
+      background:
+        radial-gradient(ellipse at 15% 0%, var(--accent-soft), transparent 34rem),
+        var(--bg);
+      color: var(--text);
+      font: 16px/1.55 Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    body.drawer-open { overflow: hidden; }
+
+    button, input { font: inherit; }
+
+    button {
+      color: inherit;
+    }
+
+    button:focus-visible,
+    input:focus-visible,
+    .dropzone:focus-visible,
+    a:focus-visible {
+      outline: 3px solid var(--focus);
+      outline-offset: 3px;
+    }
+
+    button:disabled {
+      cursor: not-allowed;
+      opacity: .58;
+    }
+
+    a { color: var(--accent); }
+
+    .app-shell {
+      width: min(1320px, 100%);
+      margin: 0 auto;
+      padding: var(--space-6) clamp(var(--space-4), 4vw, var(--space-8)) var(--space-12);
+    }
+
+    .site-header,
+    .brand,
+    .header-actions,
+    .section-heading,
+    .search-tools,
+    .card-heading,
+    .card-stats,
+    .drawer-heading,
+    .drawer-actions,
+    .drawer-tabs,
+    .button-row,
+    .ask-toolbar,
+    .ask-result-heading {
+      display: flex;
+      align-items: center;
+    }
+
+    .site-header {
+      justify-content: space-between;
+      gap: var(--space-4);
+      margin-bottom: clamp(var(--space-8), 6vw, var(--space-12));
+    }
+
+    .brand {
+      gap: var(--space-3);
+      min-width: 0;
+    }
+
+    .brand-mark {
+      display: grid;
+      width: 42px;
+      height: 42px;
+      place-items: center;
+      border-radius: 13px;
+      background: var(--accent);
+      color: var(--accent-ink);
+      font-size: 1.25rem;
+      font-weight: 850;
+      box-shadow: var(--shadow-soft);
+    }
+
+    .brand-name {
+      display: block;
+      font-size: 1.12rem;
+      font-weight: 800;
+      letter-spacing: -.035em;
+      line-height: 1.2;
+    }
+
+    .brand-caption {
+      display: block;
+      margin-top: 2px;
+      color: var(--muted);
+      font-size: .79rem;
+    }
+
+    .header-actions { gap: var(--space-2); }
+
+    .icon-button,
+    .secondary-button,
+    .copy-button,
+    .tab-button,
+    .filter-chip,
+    .suggestion-chip {
+      border: 1px solid var(--line);
+      background: var(--surface);
+      cursor: pointer;
+      transition: background-color .18s ease, border-color .18s ease, transform .18s ease;
+    }
+
+    .icon-button {
+      display: inline-flex;
+      width: 42px;
+      height: 42px;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+    }
+
+    .icon-button svg { width: 19px; height: 19px; }
+
+    .hero {
+      display: grid;
+      grid-template-columns: minmax(0, 1.15fr) minmax(300px, .85fr);
+      gap: var(--space-8);
+      align-items: end;
+      margin-bottom: var(--space-8);
+    }
+
+    .eyebrow {
+      margin: 0 0 var(--space-2);
+      color: var(--accent);
+      font-size: .75rem;
+      font-weight: 800;
+      letter-spacing: .13em;
+      text-transform: uppercase;
+    }
+
+    h1, h2, h3, p { margin-top: 0; }
+
+    h1 {
+      max-width: 700px;
+      margin-bottom: var(--space-3);
+      font-size: clamp(2.2rem, 5vw, 4rem);
+      letter-spacing: -.065em;
+      line-height: 1.02;
+    }
+
+    .hero-copy {
+      max-width: 650px;
+      margin-bottom: 0;
+      color: var(--muted);
+      font-size: clamp(1rem, 1.5vw, 1.15rem);
+    }
+
+    .flow-card,
+    .panel,
+    .dataset-card,
+    .drawer-panel {
+      border: 1px solid var(--line);
+      background: var(--surface);
+      box-shadow: var(--shadow-soft);
+    }
+
+    .flow-card {
+      padding: var(--space-4);
+      border-radius: var(--radius-md);
+    }
+
+    .flow-title {
+      margin: 0 0 var(--space-3);
+      color: var(--muted);
+      font-size: .75rem;
+      font-weight: 750;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+    }
+
+    .flow-steps {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: var(--space-2);
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .flow-steps li {
+      position: relative;
+      display: grid;
+      min-width: 0;
+      gap: 5px;
+      justify-items: center;
+      color: var(--muted);
+      font-size: .76rem;
+      font-weight: 650;
+      text-align: center;
+    }
+
+    .flow-steps li:not(:last-child)::after {
+      position: absolute;
+      top: 13px;
+      left: calc(50% + 17px);
+      width: calc(100% - 22px);
+      height: 1px;
+      background: var(--line);
+      content: "";
+    }
+
+    .flow-dot {
+      display: grid;
+      width: 27px;
+      height: 27px;
+      place-items: center;
+      border: 1px solid var(--line);
+      border-radius: 50%;
+      background: var(--surface-soft);
+      color: var(--accent);
+      font-size: .75rem;
+      font-weight: 800;
+    }
+
+    .workspace-grid {
+      display: grid;
+      grid-template-columns: minmax(280px, .75fr) minmax(0, 1.6fr);
+      gap: var(--space-5);
+      align-items: start;
+    }
+
+    .panel {
+      min-width: 0;
+      padding: clamp(var(--space-4), 3vw, var(--space-6));
+      border-radius: var(--radius-lg);
+    }
+
+    .section-heading {
+      justify-content: space-between;
+      gap: var(--space-4);
+    }
+
+    .section-heading h2 {
+      margin: 0;
+      font-size: 1.22rem;
+      letter-spacing: -.025em;
+    }
+
+    .upload-panel h2 { margin-bottom: var(--space-1); }
+
+    .section-copy {
+      margin: 0 0 var(--space-5);
+      color: var(--muted);
+      font-size: .9rem;
+    }
+
+    .dropzone {
+      display: grid;
+      min-height: 210px;
+      place-items: center;
+      padding: var(--space-6);
+      border: 2px dashed var(--line);
+      border-radius: var(--radius-md);
+      background: var(--surface-soft);
+      cursor: pointer;
+      text-align: center;
+      transition: background-color .18s ease, border-color .18s ease, transform .18s ease;
+    }
+
+    .dropzone:hover,
+    .dropzone.is-dragging {
+      transform: translateY(-1px);
+      border-color: var(--accent);
+      background: var(--accent-soft);
+    }
+
+    .dropzone-icon {
+      display: grid;
+      width: 54px;
+      height: 54px;
+      place-items: center;
+      margin: 0 auto var(--space-3);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      background: var(--surface);
+      color: var(--accent);
+    }
+
+    .dropzone-icon svg { width: 28px; height: 28px; }
+
+    .dropzone-title {
+      display: block;
+      font-size: 1rem;
+      font-weight: 760;
+    }
+
+    .dropzone-meta {
+      display: block;
+      margin-top: var(--space-1);
+      color: var(--muted);
+      font-size: .84rem;
+    }
+
+    .selected-file {
+      min-height: 1.5em;
+      margin: var(--space-3) 0;
+      color: var(--muted);
+      font-size: .86rem;
+      overflow-wrap: anywhere;
+    }
+
+    .visually-hidden {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      clip-path: inset(50%);
+    }
+
+    .primary-button,
+    .secondary-button,
+    .copy-button,
+    .retry-button {
+      display: inline-flex;
+      min-height: 42px;
+      align-items: center;
+      justify-content: center;
+      gap: var(--space-2);
+      padding: 9px 15px;
+      border-radius: var(--radius-sm);
+      font-weight: 730;
+      text-decoration: none;
+    }
+
+    .primary-button {
+      border: 1px solid var(--accent);
+      background: var(--accent);
+      color: var(--accent-ink);
+      cursor: pointer;
+      transition: background-color .18s ease, transform .18s ease;
+    }
+
+    .primary-button:hover:not(:disabled) {
+      transform: translateY(-1px);
+      border-color: var(--accent-hover);
+      background: var(--accent-hover);
+    }
+
+    .secondary-button:hover,
+    .copy-button:hover,
+    .filter-chip:hover,
+    .suggestion-chip:hover,
+    .tab-button:hover {
+      border-color: var(--accent);
+      background: var(--accent-soft);
+    }
+
+    .upload-actions { display: flex; justify-content: flex-end; }
+    .warning-note {
+      margin: var(--space-4) 0 0;
+      padding: var(--space-3) var(--space-4);
+      border-left: 3px solid var(--warning);
+      border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+      background: var(--warning-soft);
+      color: var(--text);
+      font-size: .84rem;
+    }
+
+    .upload-feedback { margin-top: var(--space-4); }
+    .upload-message { margin: 0; color: var(--muted); font-size: .88rem; }
+    .upload-message a { font-weight: 750; }
+
+    .upload-stepper {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: var(--space-2);
+      margin: 0 0 var(--space-3);
+      padding: 0;
+      list-style: none;
+    }
+
+    .upload-step {
+      display: flex;
+      min-width: 0;
+      align-items: center;
+      gap: var(--space-2);
+      color: var(--muted);
+      font-size: .75rem;
+      font-weight: 700;
+    }
+
+    .step-icon {
+      display: grid;
+      width: 23px;
+      height: 23px;
+      flex: 0 0 auto;
+      place-items: center;
+      border: 1px solid var(--line);
+      border-radius: 50%;
+      background: var(--surface-soft);
+      font-size: .74rem;
+    }
+
+    .upload-step.is-active { color: var(--accent); }
+    .upload-step.is-done { color: var(--success); }
+    .upload-step.is-failed { color: var(--danger); }
+    .upload-step.is-done .step-icon { border-color: var(--success); background: var(--success-soft); }
+    .upload-step.is-failed .step-icon { border-color: var(--danger); background: var(--danger-soft); }
+
+    .spinner {
+      width: 13px;
+      height: 13px;
+      border: 2px solid var(--line);
+      border-top-color: var(--accent);
+      border-radius: 50%;
+      animation: spin .75s linear infinite;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+    @keyframes pulse { 50% { opacity: .5; } }
+    @keyframes shimmer {
+      0% { background-position: 100% 0; }
+      100% { background-position: -100% 0; }
+    }
+
+    .section-heading { margin-bottom: var(--space-4); }
+    .dataset-heading-copy { margin: 4px 0 0; color: var(--muted); font-size: .86rem; }
+    .search-tools { gap: var(--space-2); }
+
+    .search-box {
+      width: min(100%, 290px);
+      min-height: 42px;
+      padding: 9px 12px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius-sm);
+      background: var(--surface);
+      color: var(--text);
+    }
+
+    .filter-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--space-2);
+      margin-bottom: var(--space-4);
+    }
+
+    .filter-chip,
+    .suggestion-chip {
+      min-height: 35px;
+      padding: 6px 12px;
+      border-radius: 999px;
+      color: var(--muted);
+      font-size: .82rem;
+      font-weight: 700;
+    }
+
+    .filter-chip[aria-pressed="true"] {
+      border-color: var(--accent);
+      background: var(--accent-soft);
+      color: var(--accent);
+    }
+
+    .dataset-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(min(100%, 260px), 1fr));
+      gap: var(--space-3);
+    }
+
+    .dataset-card {
+      display: grid;
+      min-width: 0;
+      gap: var(--space-3);
+      padding: var(--space-4);
+      border-radius: var(--radius-md);
+      color: var(--text);
+      cursor: pointer;
+      text-align: left;
+      transition: transform .18s ease, border-color .18s ease, box-shadow .18s ease;
+    }
+
+    .dataset-card:hover {
+      transform: translateY(-3px);
+      border-color: var(--accent);
+      box-shadow: var(--shadow);
+    }
+
+    .card-heading { justify-content: space-between; gap: var(--space-2); }
+    .dataset-name {
+      min-width: 0;
+      margin: 0;
+      font-size: 1rem;
+      font-weight: 790;
+      overflow-wrap: anywhere;
+    }
+
+    .status-badge {
+      display: inline-flex;
+      flex: 0 0 auto;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 9px;
+      border-radius: 999px;
+      font-size: .72rem;
+      font-weight: 800;
+      letter-spacing: .02em;
+    }
+
+    .status-badge::before {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: currentColor;
+      content: "";
+    }
+
+    .status-ready { background: var(--success-soft); color: var(--success); }
+    .status-processing { background: var(--warning-soft); color: var(--warning); }
+    .status-processing::before { animation: pulse 1.2s ease-in-out infinite; }
+    .status-failed { background: var(--danger-soft); color: var(--danger); }
+    .status-unknown { background: var(--surface-soft); color: var(--muted); }
+
+    .card-stats { gap: var(--space-4); color: var(--muted); font-size: .82rem; }
+    .card-stat strong { color: var(--text); font-weight: 760; }
+    .card-error { margin: 0; color: var(--danger); font-size: .8rem; overflow-wrap: anywhere; }
+    .card-hint { color: var(--accent); font-size: .8rem; font-weight: 700; }
+
+    .empty-state,
+    .inline-error {
+      display: grid;
+      justify-items: start;
+      gap: var(--space-2);
+      padding: var(--space-6);
+      border: 1px dashed var(--line);
+      border-radius: var(--radius-md);
+      background: var(--surface-soft);
+    }
+
+    .empty-state { grid-column: 1 / -1; }
+    .empty-state h3,
+    .inline-error h3 { margin: 0; font-size: 1rem; }
+    .empty-state p,
+    .inline-error p { margin: 0; color: var(--muted); font-size: .9rem; }
+
+    .retry-button {
+      min-height: 36px;
+      padding: 6px 11px;
+      border: 1px solid var(--line);
+      background: var(--surface);
+      color: var(--accent);
+      cursor: pointer;
+    }
+
+    .skeleton-card,
+    .skeleton-line {
+      border-radius: var(--radius-sm);
+      background: linear-gradient(90deg, var(--surface-soft) 25%, var(--line) 50%, var(--surface-soft) 75%);
+      background-size: 200% 100%;
+      animation: shimmer 1.4s ease-in-out infinite;
+    }
+
+    .skeleton-card { min-height: 145px; padding: var(--space-4); }
+    .skeleton-line { height: 13px; margin-bottom: var(--space-3); }
+    .skeleton-line.short { width: 45%; }
+    .skeleton-line.medium { width: 70%; }
+    .skeleton-line.long { width: 92%; }
+    .skeleton-block { min-height: 120px; border-radius: var(--radius-md); }
+
+    .drawer {
+      position: fixed;
+      z-index: 20;
+      inset: 0;
+      display: flex;
+      justify-content: flex-end;
+    }
+
+    .drawer-backdrop {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      border: 0;
+      background: var(--overlay);
+      cursor: pointer;
+    }
+
+    .drawer-panel {
+      position: relative;
+      display: flex;
+      width: min(100%, 980px);
+      height: 100%;
+      flex-direction: column;
+      border-radius: var(--radius-lg) 0 0 var(--radius-lg);
+      background: var(--surface);
+      box-shadow: var(--shadow);
+      animation: drawer-in .2s ease-out;
+    }
+
+    @keyframes drawer-in { from { transform: translateX(24px); opacity: .6; } to { transform: translateX(0); opacity: 1; } }
+
+    .drawer-header {
+      padding: var(--space-5) clamp(var(--space-4), 4vw, var(--space-8)) var(--space-3);
+      border-bottom: 1px solid var(--line);
+    }
+
+    .drawer-heading {
+      justify-content: space-between;
+      gap: var(--space-4);
+    }
+
+    .drawer-title-wrap { min-width: 0; }
+    .drawer-title-wrap h2 {
+      margin: 0 0 var(--space-2);
+      font-size: clamp(1.3rem, 3vw, 1.8rem);
+      letter-spacing: -.04em;
+      overflow-wrap: anywhere;
+    }
+
+    .drawer-actions { flex-wrap: wrap; justify-content: flex-end; gap: var(--space-2); }
+    .copy-button { min-height: 36px; padding: 6px 10px; font-size: .78rem; }
+    .close-button { width: 38px; height: 38px; }
+
+    .drawer-tabs {
+      gap: var(--space-1);
+      margin-top: var(--space-4);
+      overflow-x: auto;
+    }
+
+    .tab-button {
+      min-height: 39px;
+      padding: 7px 13px;
+      border-radius: var(--radius-sm) var(--radius-sm) 0 0;
+      background: transparent;
+      color: var(--muted);
+      font-weight: 710;
+      white-space: nowrap;
+    }
+
+    .tab-button[aria-selected="true"] {
+      border-color: var(--accent) var(--accent) var(--surface);
+      background: var(--accent-soft);
+      color: var(--accent);
+    }
+
+    .drawer-content {
+      min-height: 0;
+      flex: 1;
+      overflow: auto;
+      padding: var(--space-5) clamp(var(--space-4), 4vw, var(--space-8)) var(--space-8);
+    }
+
+    .content-heading {
+      margin: 0 0 var(--space-3);
+      font-size: 1.05rem;
+      letter-spacing: -.02em;
+    }
+
+    .content-copy { color: var(--muted); font-size: .88rem; }
+
+    .table-scroll {
+      max-width: 100%;
+      max-height: min(58vh, 570px);
+      overflow: auto;
+      border: 1px solid var(--line);
+      border-radius: var(--radius-sm);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0;
+      background: var(--surface);
+      font-variant-numeric: tabular-nums;
+    }
+
+    th, td {
+      min-width: 105px;
+      padding: 10px 12px;
+      border-bottom: 1px solid var(--line);
+      text-align: left;
+      vertical-align: top;
+      white-space: nowrap;
+    }
+
+    th {
+      position: sticky;
+      z-index: 1;
+      top: 0;
+      background: var(--table-head);
+      color: var(--text);
+      font-size: .78rem;
+      font-weight: 780;
+    }
+
+    td { color: var(--text); font-size: .86rem; }
+    tbody tr:last-child td { border-bottom: 0; }
+    tbody tr:hover { background: var(--surface-soft); }
+    td.numeric { text-align: right; }
+
+    .sort-button {
+      padding: 0;
+      border: 0;
+      background: transparent;
+      color: inherit;
+      cursor: pointer;
+      font: inherit;
+      text-align: left;
+    }
+
+    .schema-table th { position: static; }
+    .key-badge {
+      display: inline-block;
+      margin-left: var(--space-2);
+      padding: 2px 7px;
+      border-radius: 999px;
+      background: var(--accent-soft);
+      color: var(--accent);
+      font-size: .68rem;
+      font-weight: 800;
+      vertical-align: middle;
+    }
+
+    .ask-toolbar {
+      align-items: stretch;
+      gap: var(--space-2);
+      margin-bottom: var(--space-3);
+    }
+
+    .ask-input {
+      min-width: 0;
+      min-height: 44px;
+      flex: 1;
+      padding: 9px 12px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius-sm);
+      background: var(--surface);
+      color: var(--text);
+    }
+
+    .suggestions { display: flex; flex-wrap: wrap; gap: var(--space-2); margin: 0 0 var(--space-5); }
+
+    .ask-result {
+      margin-top: var(--space-5);
+      padding: var(--space-4);
+      border: 1px solid var(--line);
+      border-radius: var(--radius-md);
+      background: var(--surface-soft);
+    }
+
+    .ask-result-heading { justify-content: space-between; gap: var(--space-3); margin-bottom: var(--space-2); }
+    .ask-result-heading h3 { margin: 0; font-size: .96rem; }
+
+    .filter-code {
+      max-height: 220px;
+      overflow: auto;
+      margin: 0;
+      padding: var(--space-3);
+      border: 1px solid var(--line);
+      border-radius: var(--radius-sm);
+      background: var(--surface);
+      color: var(--text);
+      font: .82rem/1.55 ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", monospace;
+      white-space: pre-wrap;
+      overflow-wrap: anywhere;
+    }
+
+    .ask-notes { margin-top: var(--space-3); color: var(--warning); font-size: .84rem; }
+    .ask-count { margin: var(--space-4) 0 var(--space-2); color: var(--muted); font-size: .85rem; }
+    .docs-note { margin-bottom: var(--space-4); color: var(--muted); font-size: .88rem; }
+    .swagger-host { min-height: 240px; overflow-x: auto; border: 1px solid var(--line); border-radius: var(--radius-md); background: var(--surface); }
+    .swagger-ui { color: var(--text); }
+    .swagger-ui .info .title, .swagger-ui .opblock-tag, .swagger-ui .opblock-description-wrapper p { color: var(--text); }
+    .swagger-ui .scheme-container { background: var(--surface-soft); box-shadow: none; }
+
+    .toast {
+      position: fixed;
+      z-index: 40;
+      right: var(--space-5);
+      bottom: var(--space-5);
+      max-width: min(90vw, 360px);
+      padding: 11px 16px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius-sm);
+      background: var(--surface-raised);
+      color: var(--text);
+      box-shadow: var(--shadow);
+      font-size: .86rem;
+      font-weight: 700;
+    }
+
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
+    }
+
+    @media (max-width: 900px) {
+      .hero { grid-template-columns: 1fr; gap: var(--space-5); }
+      .workspace-grid { grid-template-columns: 1fr; }
+    }
+
+    @media (max-width: 640px) {
+      .app-shell { padding: var(--space-4) var(--space-3) var(--space-8); }
+      .site-header { margin-bottom: var(--space-8); }
+      .brand-caption { max-width: 190px; }
+      .hero { margin-bottom: var(--space-5); }
+      .flow-card { padding: var(--space-3); }
+      .flow-steps { gap: var(--space-1); }
+      .flow-steps li { font-size: .68rem; }
+      .flow-steps li:not(:last-child)::after { left: calc(50% + 15px); width: calc(100% - 18px); }
+      .workspace-grid { gap: var(--space-3); }
+      .panel { padding: var(--space-4); border-radius: var(--radius-md); }
+      .section-heading { align-items: flex-start; }
+      .datasets-heading { flex-direction: column; }
+      .search-tools, .search-box { width: 100%; }
+      .dataset-grid { grid-template-columns: 1fr; }
+      .drawer-panel {
+        width: 100%;
+        height: 100dvh;
+        border: 0;
+        border-radius: 0;
+        animation: none;
+      }
+      .drawer-header { padding: var(--space-4) var(--space-3) var(--space-2); }
+      .drawer-heading { align-items: flex-start; flex-wrap: wrap; }
+      .drawer-actions { justify-content: flex-start; }
+      .drawer-content { padding: var(--space-4) var(--space-3) var(--space-8); }
+      .drawer-tabs { margin-top: var(--space-3); }
+      .tab-button { padding: 7px 10px; font-size: .84rem; }
+      .ask-toolbar { flex-wrap: wrap; }
+      .ask-input { flex-basis: 100%; }
+      .table-scroll { max-height: 55vh; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        scroll-behavior: auto !important;
+        animation-duration: .01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: .01ms !important;
+      }
+    }
+  </style>
 </head>
 <body>
-<main>
-<h1>DropAPI</h1>
-<p class="sub">Drop a CSV into S3. A Step Functions workflow checks it, loads it, and gives you a live API and a plain-English question box. No servers, no pipeline.</p>
-<div class="hint">To add a dataset, run:
-<pre>aws s3 cp mydata.csv s3://dropapi-uploadbucket-om7mtkx1okwn/uploads/mydata.csv</pre>
-The status below updates by itself. Use letters, numbers, - or _ in the file name.</div>
+  <div class="app-shell">
+    <header class="site-header">
+      <a class="brand" href="#" aria-label="DropAPI home">
+        <span class="brand-mark" aria-hidden="true">D</span>
+        <span>
+          <span class="brand-name">DropAPI</span>
+          <span class="brand-caption">CSV in. Useful API out.</span>
+        </span>
+      </a>
+      <div class="header-actions">
+        <button id="theme-toggle" class="icon-button" type="button" aria-label="Switch color theme" title="Toggle color theme">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+            <circle cx="12" cy="12" r="4"></circle>
+            <path d="M12 2v2m0 16v2M4.93 4.93l1.42 1.42m11.3 11.3 1.42 1.42M2 12h2m16 0h2M4.93 19.07l1.42-1.42m11.3-11.3 1.42-1.42"></path>
+          </svg>
+        </button>
+      </div>
+    </header>
 
-<h2>Datasets</h2>
-<div id="datasets" aria-live="polite"><p class="sub">Loading datasets…</p></div>
+    <main>
+      <section class="hero" aria-labelledby="page-title">
+        <div>
+          <p class="eyebrow">Your data, in motion</p>
+          <h1 id="page-title">From CSV to API<br>without the busywork.</h1>
+          <p class="hero-copy">Drop in a dataset, let the pipeline shape it, then explore and query it from one calm little workspace.</p>
+        </div>
+        <div class="flow-card" aria-label="How DropAPI works">
+          <p class="flow-title">From file to answers</p>
+          <ol class="flow-steps">
+            <li><span class="flow-dot">1</span><span>Drop</span></li>
+            <li><span class="flow-dot">2</span><span>Validate</span></li>
+            <li><span class="flow-dot">3</span><span>Load</span></li>
+            <li><span class="flow-dot">4</span><span>Query API</span></li>
+          </ol>
+        </div>
+      </section>
 
-<section id="work" hidden>
-<h2>Ask <span id="dsname"></span> a question</h2>
-<form id="askform">
-<input type="text" id="q" maxlength="300" aria-label="Your question" placeholder="Type a question in plain English">
-<button class="go" type="submit">Ask</button>
-</form>
-<div class="chips" id="chips"></div>
-<div id="answer" aria-live="polite"></div>
+      <div class="workspace-grid">
+        <section class="panel upload-panel" aria-labelledby="upload-title">
+          <h2 id="upload-title">Add a dataset</h2>
+          <p class="section-copy">CSV files up to 10 MiB. Weâ€™ll validate and prepare your API.</p>
+          <input class="visually-hidden" type="file" id="csvfile" accept=".csv,text/csv" aria-label="Choose a CSV file" tabindex="-1">
+          <label class="dropzone" id="dropzone" for="csvfile" role="button" tabindex="0" aria-describedby="file-guidance">
+            <span>
+              <span class="dropzone-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M12 16V4m0 0L7.5 8.5M12 4l4.5 4.5"></path>
+                  <path d="M5 14.5v3A2.5 2.5 0 0 0 7.5 20h9a2.5 2.5 0 0 0 2.5-2.5v-3"></path>
+                </svg>
+              </span>
+              <span class="dropzone-title">Drop a CSV here or click to browse</span>
+              <span class="dropzone-meta" id="file-guidance">CSV only Â· 10 MiB maximum</span>
+            </span>
+          </label>
+          <p id="selected-file" class="selected-file" aria-live="polite">No file selected</p>
+          <div class="upload-actions">
+            <button id="upload-button" class="primary-button" type="button" disabled>Upload CSV</button>
+          </div>
+          <div id="upload-feedback" class="upload-feedback" hidden>
+            <ol id="upload-stepper" class="upload-stepper" aria-label="Upload progress">
+              <li class="upload-step" data-upload-step="uploading"><span class="step-icon" aria-hidden="true"></span><span>Uploading</span></li>
+              <li class="upload-step" data-upload-step="processing"><span class="step-icon" aria-hidden="true"></span><span>PROCESSING</span></li>
+              <li class="upload-step" data-upload-step="terminal"><span class="step-icon" aria-hidden="true"></span><span id="terminal-label">READY / FAILED</span></li>
+            </ol>
+            <p id="upload-message" class="upload-message" aria-live="polite"></p>
+          </div>
+          <p class="warning-note">Don't upload sensitive data. Datasets are readable by anyone with the link.</p>
+        </section>
 
-<h2>Columns found</h2>
-<div class="cols" id="cols"></div>
+        <section class="panel datasets-panel" aria-labelledby="datasets-title">
+          <div class="section-heading datasets-heading">
+            <div>
+              <h2 id="datasets-title">Your datasets</h2>
+              <p id="dataset-summary" class="dataset-heading-copy">Loading your workspaceâ€¦</p>
+            </div>
+            <div class="search-tools">
+              <label class="sr-only" for="dataset-search">Search datasets</label>
+              <input id="dataset-search" class="search-box" type="search" placeholder="Search datasetsâ€¦" autocomplete="off">
+              <button id="refresh-button" class="secondary-button" type="button" aria-label="Refresh datasets">Refresh</button>
+            </div>
+          </div>
+          <div class="filter-row" role="group" aria-label="Filter datasets">
+            <button class="filter-chip" type="button" data-filter="ALL" aria-pressed="true">All</button>
+            <button class="filter-chip" type="button" data-filter="READY" aria-pressed="false">Ready</button>
+            <button class="filter-chip" type="button" data-filter="FAILED" aria-pressed="false">Failed</button>
+          </div>
+          <div id="dataset-grid" class="dataset-grid" aria-live="polite" aria-busy="true"></div>
+        </section>
+      </div>
+    </main>
+  </div>
 
-<h2>First rows</h2>
-<div class="wrap" id="rows"></div>
+  <div id="drawer" class="drawer" hidden>
+    <button id="drawer-backdrop" class="drawer-backdrop" type="button" aria-label="Close dataset details"></button>
+    <aside id="drawer-panel" class="drawer-panel" role="dialog" aria-modal="true" aria-labelledby="drawer-title" tabindex="-1">
+      <header class="drawer-header">
+        <div class="drawer-heading">
+          <div class="drawer-title-wrap">
+            <h2 id="drawer-title">Dataset</h2>
+            <span id="drawer-status" class="status-badge status-ready">READY</span>
+          </div>
+          <div class="drawer-actions">
+            <button id="copy-curl" class="copy-button" type="button">Copy curl</button>
+            <button id="copy-api-url" class="copy-button" type="button">Copy API URL</button>
+            <button id="close-drawer" class="icon-button close-button" type="button" aria-label="Close dataset details" title="Close">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                <path d="m6 6 12 12M18 6 6 18"></path>
+              </svg>
+            </button>
+          </div>
+        </div>
+        <div class="drawer-tabs" role="tablist" aria-label="Dataset details">
+          <button id="tab-preview" class="tab-button" type="button" role="tab" aria-selected="true" aria-controls="tab-panel" tabindex="0" data-tab="preview">Preview</button>
+          <button id="tab-schema" class="tab-button" type="button" role="tab" aria-selected="false" aria-controls="tab-panel" tabindex="-1" data-tab="schema">Schema</button>
+          <button id="tab-ask" class="tab-button" type="button" role="tab" aria-selected="false" aria-controls="tab-panel" tabindex="-1" data-tab="ask">Ask</button>
+          <button id="tab-docs" class="tab-button" type="button" role="tab" aria-selected="false" aria-controls="tab-panel" tabindex="-1" data-tab="docs">API docs</button>
+        </div>
+      </header>
+      <section id="tab-panel" class="drawer-content" role="tabpanel" aria-labelledby="tab-preview" aria-live="polite"></section>
+    </aside>
+  </div>
+  <div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
 
-<h2>API docs for this dataset</h2>
-<p class="sub">Generated from the detected schema. Use Try it out to call the live API.</p>
-<div id="swagger"></div>
-</section>
-</main>
+  <script src="https://cdn.jsdelivr.net/npm/swagger-ui-dist@5.17.14/swagger-ui-bundle.js"></script>
+  <script>
+    const API_URL = "https://m3hosvmap7.execute-api.ap-south-1.amazonaws.com";
+    const MAX_UPLOAD_BYTES = 10 * 1024 * 1024;
+    const $ = id => document.getElementById(id);
 
-<script src="https://cdn.jsdelivr.net/npm/swagger-ui-dist@5.17.14/swagger-ui-bundle.js"></script>
-<script>
-const API = "https://3falo8ba70.execute-api.ap-south-1.amazonaws.com";
-const $ = id => document.getElementById(id);
-let current = null, pollTimer = null;
+    let datasets = [];
+    let datasetDetails = new Map();
+    let listFilter = "ALL";
+    let searchTerm = "";
+    let refreshTimer = null;
+    let refreshInProgress = false;
+    let selectedFile = null;
+    let selectedDatasetId = null;
+    let selectedDetail = null;
+    let sampleRows = [];
+    let activeTab = "preview";
+    let previewSort = {column: null, descending: false};
+    let askQuestion = "";
+    let askResult = null;
+    let askError = "";
+    let askLoading = false;
+    let currentCurl = "";
+    let previousFocus = null;
+    let toastTimer = null;
 
-function el(tag, text, cls) {
-  const e = document.createElement(tag);
-  if (text != null) e.textContent = text;
-  if (cls) e.className = cls;
-  return e;
-}
-async function get(path) {
-  const res = await fetch(API + path);
-  const body = await res.json();
-  if (!res.ok) throw new Error(body.error || "Request failed (" + res.status + ")");
-  return body;
-}
-function renderTable(rows) {
-  if (!rows.length) return el("p", "No matching rows.", "sub");
-  const keys = Object.keys(rows[0]);
-  const t = el("table"), head = el("tr");
-  keys.forEach(k => head.appendChild(el("th", k)));
-  t.appendChild(head);
-  rows.forEach(r => {
-    const tr = el("tr");
-    keys.forEach(k => {
-      const v = r[k];
-      tr.appendChild(el("td", v === null || v === undefined ? "" : String(v),
-        typeof v === "number" ? "n" : ""));
+    function el(tag, text, className) {
+      const node = document.createElement(tag);
+      if (text !== null && text !== undefined) node.textContent = text;
+      if (className) node.className = className;
+      return node;
+    }
+
+    function formatBytes(bytes) {
+      if (bytes < 1024) return bytes + " B";
+      if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + " KB";
+      return (bytes / (1024 * 1024)).toFixed(1) + " MB";
+    }
+
+    async function apiGet(path) {
+      let response;
+      try {
+        response = await fetch(API_URL + path);
+      } catch (error) {
+        throw new Error("Could not reach the API. Check your connection and try again.");
+      }
+      let body;
+      try {
+        body = await response.json();
+      } catch (error) {
+        body = null;
+      }
+      if (!response.ok) {
+        const requestError = new Error(
+          body && body.error ? body.error : "Request failed (" + response.status + ")."
+        );
+        requestError.status = response.status;
+        throw requestError;
+      }
+      if (!body || typeof body !== "object") {
+        throw new Error("The API returned an unreadable response.");
+      }
+      return body;
+    }
+
+    function appendEmptyState(container, title, message) {
+      const state = el("div", null, "empty-state");
+      state.appendChild(el("h3", title));
+      state.appendChild(el("p", message));
+      container.appendChild(state);
+    }
+
+    function appendRetry(container, message, retry) {
+      const errorBox = el("div", null, "inline-error");
+      errorBox.appendChild(el("p", message));
+      const button = el("button", "Try again", "retry-button");
+      button.type = "button";
+      button.addEventListener("click", retry);
+      errorBox.appendChild(button);
+      container.appendChild(errorBox);
+    }
+
+    function normalizedStatus(value) {
+      const status = String(value || "UNKNOWN").toUpperCase();
+      return ["READY", "PROCESSING", "FAILED"].includes(status) ? status : "UNKNOWN";
+    }
+
+    function renderListSkeleton() {
+      const grid = $("dataset-grid");
+      grid.replaceChildren();
+      grid.setAttribute("aria-busy", "true");
+      for (let i = 0; i < 3; i += 1) {
+        const card = el("div", null, "skeleton-card");
+        card.setAttribute("aria-hidden", "true");
+        card.appendChild(el("div", null, "skeleton-line medium"));
+        card.appendChild(el("div", null, "skeleton-line short"));
+        card.appendChild(el("div", null, "skeleton-line long"));
+        grid.appendChild(card);
+      }
+    }
+
+    function updateFilterCounts() {
+      const counts = {
+        ALL: datasets.length,
+        READY: datasets.filter(item => item.status === "READY").length,
+        FAILED: datasets.filter(item => item.status === "FAILED").length
+      };
+      document.querySelectorAll("[data-filter]").forEach(button => {
+        const filter = button.dataset.filter;
+        const label = filter === "ALL" ? "All" : filter[0] + filter.slice(1).toLowerCase();
+        button.textContent = label + " Â· " + counts[filter];
+        button.setAttribute("aria-pressed", String(filter === listFilter));
+      });
+    }
+
+    function renderDatasetList() {
+      const grid = $("dataset-grid");
+      grid.replaceChildren();
+      grid.setAttribute("aria-busy", "false");
+      updateFilterCounts();
+
+      const matching = datasets.filter(item => {
+        const statusMatches = listFilter === "ALL" || item.status === listFilter;
+        const nameMatches = item.dataset_id.toLowerCase().includes(searchTerm);
+        return statusMatches && nameMatches;
+      });
+
+      const processingCount = datasets.filter(item => item.status === "PROCESSING").length;
+      $("dataset-summary").textContent = datasets.length
+        ? datasets.length + " dataset" + (datasets.length === 1 ? "" : "s") +
+          (processingCount ? " Â· " + processingCount + " processing" : "")
+        : "Your uploaded datasets will appear here.";
+
+      if (!datasets.length) {
+        appendEmptyState(grid, "A little space for your data", "Upload a CSV to create your first queryable dataset.");
+        return;
+      }
+      if (!matching.length) {
+        appendEmptyState(grid, "No matching datasets", "Try a different search or status filter.");
+        return;
+      }
+
+      matching.forEach(item => {
+        const card = el("button", null, "dataset-card");
+        card.type = "button";
+        card.setAttribute("aria-label", item.dataset_id + ", " + item.status + ". " +
+          (item.status === "READY" ? "Open dataset details." : "Not ready to open yet."));
+        const heading = el("span", null, "card-heading");
+        heading.appendChild(el("span", item.dataset_id, "dataset-name"));
+        heading.appendChild(el("span", item.status, "status-badge status-" + item.status.toLowerCase()));
+        card.appendChild(heading);
+
+        const stats = el("span", null, "card-stats");
+        const rowStat = el("span", null, "card-stat");
+        rowStat.appendChild(el("strong", item.row_count == null ? "â€”" : Number(item.row_count).toLocaleString()));
+        rowStat.appendChild(document.createTextNode(" rows"));
+        stats.appendChild(rowStat);
+        const colStat = el("span", null, "card-stat");
+        const detail = datasetDetails.get(item.dataset_id);
+        colStat.appendChild(el("strong", detail && Array.isArray(detail.columns)
+          ? String(detail.columns.length) : "â€”"));
+        colStat.appendChild(document.createTextNode(" columns"));
+        stats.appendChild(colStat);
+        card.appendChild(stats);
+
+        if (item.status === "FAILED" && item.error) {
+          card.appendChild(el("span", item.error, "card-error"));
+        } else if (item.status === "READY") {
+          card.appendChild(el("span", "Open dataset workspace â†’", "card-hint"));
+        } else {
+          card.appendChild(el("span", "Processing your CSVâ€¦", "card-hint"));
+        }
+
+        card.addEventListener("click", () => {
+          if (item.status === "READY") openDataset(item.dataset_id);
+        });
+        grid.appendChild(card);
+      });
+    }
+
+    async function refreshDatasets(showLoading) {
+      if (refreshTimer) clearTimeout(refreshTimer);
+      if (refreshInProgress) return;
+      refreshInProgress = true;
+      if (showLoading) renderListSkeleton();
+      try {
+        const response = await apiGet("/datasets");
+        if (!Array.isArray(response.datasets)) {
+          throw new Error("The API response did not include a dataset list.");
+        }
+        const nextDatasets = await Promise.all(response.datasets.map(async item => {
+          const status = normalizedStatus(item.status);
+          let columnCount = null;
+          if (status === "READY") {
+            const detail = await apiGet("/datasets/" + encodeURIComponent(item.dataset_id));
+            datasetDetails.set(item.dataset_id, detail);
+            columnCount = Array.isArray(detail.columns) ? detail.columns.length : null;
+          } else {
+            datasetDetails.delete(item.dataset_id);
+          }
+          return {...item, status, column_count: columnCount};
+        }));
+        datasets = nextDatasets;
+        renderDatasetList();
+      } catch (error) {
+        const grid = $("dataset-grid");
+        grid.replaceChildren();
+        grid.setAttribute("aria-busy", "false");
+        $("dataset-summary").textContent = "We couldnâ€™t load your datasets.";
+        appendRetry(grid, error.message, () => refreshDatasets(true));
+      } finally {
+        refreshInProgress = false;
+        if (datasets.some(item => item.status === "PROCESSING")) {
+          refreshTimer = setTimeout(() => refreshDatasets(false), 3500);
+        }
+      }
+    }
+
+    function setUploadMessage(message, linkUrl, linkText) {
+      const output = $("upload-message");
+      output.replaceChildren(document.createTextNode(message));
+      if (linkUrl) {
+        output.appendChild(document.createTextNode(" "));
+        const link = el("a", linkText || linkUrl);
+        link.href = linkUrl;
+        output.appendChild(link);
+      }
+    }
+
+    function setUploadProgress(state, message, datasetId, failureStep) {
+      const feedback = $("upload-feedback");
+      feedback.hidden = false;
+      const steps = Array.from(document.querySelectorAll("[data-upload-step]"));
+      const failedAt = failureStep || "terminal";
+      $("terminal-label").textContent = state === "ready" ? "READY"
+        : state === "failed" && failedAt === "terminal" ? "FAILED" : "READY / FAILED";
+
+      const states = state === "uploading" ? ["active", "pending", "pending"]
+        : state === "processing" ? ["done", "active", "pending"]
+        : state === "ready" ? ["done", "done", "done"]
+        : failedAt === "uploading" ? ["failed", "pending", "pending"]
+        : failedAt === "processing" ? ["done", "failed", "pending"]
+        : ["done", "done", "failed"];
+
+      steps.forEach((step, index) => {
+        step.classList.remove("is-active", "is-done", "is-failed");
+        const icon = step.querySelector(".step-icon");
+        icon.replaceChildren();
+        if (states[index] === "active") {
+          step.classList.add("is-active");
+          const spinner = el("span", null, "spinner");
+          spinner.setAttribute("aria-hidden", "true");
+          icon.appendChild(spinner);
+        } else if (states[index] === "done") {
+          step.classList.add("is-done");
+          icon.textContent = "âœ“";
+        } else if (states[index] === "failed") {
+          step.classList.add("is-failed");
+          icon.textContent = "Ã—";
+        } else {
+          icon.textContent = String(index + 1);
+        }
+      });
+
+      const items = state === "ready" && datasetId
+        ? [message, API_URL + "/" + encodeURIComponent(datasetId) + "/items"]
+        : [message];
+      setUploadMessage(items[0], items[1], "Open dataset API");
+      if (state === "failed" && selectedFile) {
+        const retry = el("button", "Retry upload", "retry-button");
+        retry.type = "button";
+        retry.addEventListener("click", uploadCsv);
+        $("upload-message").appendChild(document.createTextNode(" "));
+        $("upload-message").appendChild(retry);
+      }
+    }
+
+    function setSelectedFile(file) {
+      selectedFile = file || null;
+      $("upload-button").disabled = !selectedFile;
+      $("upload-message").textContent = "";
+      $("upload-feedback").hidden = true;
+      if (!selectedFile) {
+        $("selected-file").textContent = "No file selected";
+        return;
+      }
+      $("selected-file").textContent = selectedFile.name + " Â· " + formatBytes(selectedFile.size);
+    }
+
+    async function uploadCsv() {
+      if (!selectedFile) {
+        $("upload-message").textContent = "Choose a CSV file first.";
+        $("upload-feedback").hidden = false;
+        return;
+      }
+      if (!selectedFile.name.endsWith(".csv")) {
+        $("upload-message").textContent = "Choose a file with a .csv extension.";
+        $("upload-feedback").hidden = false;
+        return;
+      }
+      if (selectedFile.size === 0) {
+        $("upload-message").textContent = "The file is empty.";
+        $("upload-feedback").hidden = false;
+        return;
+      }
+      if (selectedFile.size > MAX_UPLOAD_BYTES) {
+        $("upload-message").textContent = "The file must be 10 MiB or smaller.";
+        $("upload-feedback").hidden = false;
+        return;
+      }
+
+      const file = selectedFile;
+      const uploadButton = $("upload-button");
+      let failureStep = "uploading";
+      uploadButton.disabled = true;
+      setUploadProgress("uploading", "Preparing a secure uploadâ€¦");
+      try {
+        const response = await fetch(API_URL + "/upload-url", {
+          method: "POST",
+          headers: {"Content-Type": "application/json"},
+          body: JSON.stringify({filename: file.name})
+        });
+        let upload;
+        try {
+          upload = await response.json();
+        } catch (error) {
+          throw new Error("The upload service returned an unreadable response.");
+        }
+        if (!response.ok) {
+          throw new Error(upload.error || "Could not prepare upload (" + response.status + ").");
+        }
+
+        const formData = new FormData();
+        Object.entries(upload.fields).forEach(([key, value]) => formData.append(key, value));
+        formData.append("file", file);
+        setUploadProgress("uploading", "Uploading " + file.name + "â€¦");
+        const s3Response = await fetch(upload.url, {method: "POST", body: formData});
+        if (!s3Response.ok) throw new Error("S3 upload failed (" + s3Response.status + ").");
+
+        failureStep = "processing";
+        setUploadProgress("processing", "Upload received. Waiting for processingâ€¦");
+        const deadline = Date.now() + 60000;
+        let detail = null;
+        while (Date.now() < deadline) {
+          await new Promise(resolve => setTimeout(resolve, 1500));
+          try {
+            detail = await apiGet("/datasets/" + encodeURIComponent(upload.dataset_id));
+          } catch (error) {
+            if (error.status !== 404) throw error;
+          }
+          if (detail && (detail.status === "READY" || detail.status === "FAILED")) break;
+        }
+
+        if (detail && detail.status === "READY") {
+          setUploadProgress(
+            "ready",
+            upload.dataset_id + " is ready with " + Number(detail.row_count).toLocaleString() + " rows.",
+            upload.dataset_id
+          );
+        } else if (detail && detail.status === "FAILED") {
+          setUploadProgress("failed", "Processing failed: " +
+            (detail.error || "The CSV could not be processed."), null, "terminal");
+        } else {
+          setUploadProgress("processing", "Still processing. Refresh the dataset list shortly.");
+        }
+      } catch (error) {
+        setUploadProgress("failed", error.message || "Upload failed.", null, failureStep);
+      } finally {
+        uploadButton.disabled = false;
+        refreshDatasets(false);
+      }
+    }
+
+    function questionSuggestions(columns, primaryKey) {
+      const suggestions = [];
+      const textColumn = columns.find(column => column.type === "string" && Array.isArray(column.values) && column.values.length);
+      if (textColumn) suggestions.push("rows in " + textColumn.values[0]);
+      const numericColumn = columns.find(column =>
+        (column.type === "integer" || column.type === "number") && column.name !== primaryKey
+      );
+      if (numericColumn) {
+        suggestions.push(numericColumn.name + " over 10");
+        suggestions.push("top 3 by " + numericColumn.name);
+      }
+      const dateColumn = columns.find(column => column.type === "date");
+      if (dateColumn) suggestions.push(dateColumn.name + " after 2025-01-01");
+      const booleanColumn = columns.find(column => column.type === "boolean");
+      if (booleanColumn) suggestions.push("only " + booleanColumn.name);
+      if (!suggestions.includes("first 5")) suggestions.push("first 5");
+      if (suggestions.length < 3) suggestions.push("first 10");
+      if (suggestions.length < 3) suggestions.push("limit 20");
+      return Array.from(new Set(suggestions)).slice(0, 4);
+    }
+
+    function updateDrawerStatus(status) {
+      const badge = $("drawer-status");
+      const normalized = normalizedStatus(status);
+      badge.className = "status-badge status-" + normalized.toLowerCase();
+      badge.textContent = normalized;
+    }
+
+    function renderPanelSkeleton() {
+      const panel = $("tab-panel");
+      panel.replaceChildren();
+      const skeleton = el("div", null, "skeleton-card skeleton-block");
+      skeleton.setAttribute("aria-label", "Loading dataset details");
+      skeleton.setAttribute("role", "status");
+      panel.appendChild(skeleton);
+      panel.appendChild(el("p", "Loading dataset detailsâ€¦", "content-copy"));
+    }
+
+    function openDrawer() {
+      previousFocus = document.activeElement;
+      $("drawer").hidden = false;
+      document.body.classList.add("drawer-open");
+      $("close-drawer").focus();
+    }
+
+    function closeDrawer() {
+      $("drawer").hidden = true;
+      document.body.classList.remove("drawer-open");
+      selectedDatasetId = null;
+      selectedDetail = null;
+      sampleRows = [];
+      if (previousFocus && previousFocus.isConnected) previousFocus.focus();
+      else $("dataset-search").focus();
+    }
+
+    async function openDataset(datasetId) {
+      selectedDatasetId = datasetId;
+      selectedDetail = null;
+      sampleRows = [];
+      askQuestion = "";
+      askResult = null;
+      askError = "";
+      activeTab = "preview";
+      previewSort = {column: null, descending: false};
+      currentCurl = "curl \"" + API_URL + "/" + encodeURIComponent(datasetId) + "/items?limit=10\"";
+      $("drawer-title").textContent = datasetId;
+      updateDrawerStatus("READY");
+      setActiveTab("preview", false);
+      openDrawer();
+      renderPanelSkeleton();
+
+      try {
+        const id = encodeURIComponent(datasetId);
+        const [detail, result] = await Promise.all([
+          apiGet("/datasets/" + id),
+          apiGet("/" + id + "/items?limit=10")
+        ]);
+        if (selectedDatasetId !== datasetId || $("drawer").hidden) return;
+        if (!Array.isArray(detail.columns) || !Array.isArray(result.items)) {
+          throw new Error("The API response did not include dataset columns and rows.");
+        }
+        selectedDetail = detail;
+        sampleRows = result.items;
+        datasetDetails.set(datasetId, detail);
+        updateDrawerStatus(detail.status);
+        renderActiveTab();
+      } catch (error) {
+        if (selectedDatasetId !== datasetId || $("drawer").hidden) return;
+        const panel = $("tab-panel");
+        panel.replaceChildren();
+        appendRetry(panel, error.message, () => openDataset(datasetId));
+      }
+    }
+
+    function setActiveTab(tabName, render) {
+      activeTab = tabName;
+      document.querySelectorAll("[data-tab]").forEach(button => {
+        const selected = button.dataset.tab === tabName;
+        button.setAttribute("aria-selected", String(selected));
+        button.tabIndex = selected ? 0 : -1;
+      });
+      $("tab-panel").setAttribute("aria-labelledby", "tab-" + tabName);
+      if (render && selectedDetail) renderActiveTab();
+    }
+
+    function makeTable(rows, columns, sortable) {
+      if (!rows.length) {
+        const empty = el("div", null, "empty-state");
+        empty.appendChild(el("h3", "Nothing to show yet"));
+        empty.appendChild(el("p", "There are no rows for this view. Try another question or check back after processing."));
+        return empty;
+      }
+      const names = columns.map(column => column.name);
+      const table = document.createElement("table");
+      const caption = document.createElement("caption");
+      caption.className = "sr-only";
+      caption.textContent = sortable ? "Sortable sample rows" : "Dataset rows";
+      table.appendChild(caption);
+
+      const head = document.createElement("thead");
+      const headRow = document.createElement("tr");
+      columns.forEach(column => {
+        const th = document.createElement("th");
+        th.scope = "col";
+        if (sortable) {
+          const button = el("button", column.name, "sort-button");
+          const isSorted = previewSort.column === column.name;
+          if (isSorted) {
+            button.appendChild(document.createTextNode(previewSort.descending ? " â†“" : " â†‘"));
+            th.setAttribute("aria-sort", previewSort.descending ? "descending" : "ascending");
+          } else {
+            th.setAttribute("aria-sort", "none");
+          }
+          button.setAttribute("aria-label", "Sort by " + column.name);
+          button.addEventListener("click", () => {
+            previewSort = {
+              column: column.name,
+              descending: previewSort.column === column.name ? !previewSort.descending : false
+            };
+            renderActiveTab();
+          });
+          th.appendChild(button);
+        } else {
+          th.textContent = column.name;
+        }
+        headRow.appendChild(th);
+      });
+      head.appendChild(headRow);
+      table.appendChild(head);
+
+      const body = document.createElement("tbody");
+      let displayRows = rows.slice();
+      if (sortable && previewSort.column) {
+        const column = columns.find(item => item.name === previewSort.column);
+        displayRows.sort((left, right) => {
+          const a = left[previewSort.column];
+          const b = right[previewSort.column];
+          let order;
+          if ((column.type === "integer" || column.type === "number") &&
+              Number.isFinite(Number(a)) && Number.isFinite(Number(b))) {
+            order = Number(a) - Number(b);
+          } else {
+            order = String(a == null ? "" : a).localeCompare(String(b == null ? "" : b), undefined, {numeric: true});
+          }
+          return previewSort.descending ? -order : order;
+        });
+      }
+
+      displayRows.forEach(row => {
+        const tr = document.createElement("tr");
+        names.forEach(name => {
+          const value = row[name];
+          const td = el("td", value === null || value === undefined ? "â€”" : String(value));
+          const column = columns.find(item => item.name === name);
+          if (column && (column.type === "integer" || column.type === "number")) td.className = "numeric";
+          tr.appendChild(td);
+        });
+        body.appendChild(tr);
+      });
+      table.appendChild(body);
+      const wrapper = el("div", null, "table-scroll");
+      wrapper.appendChild(table);
+      return wrapper;
+    }
+
+    function renderPreview() {
+      const panel = $("tab-panel");
+      panel.appendChild(el("h3", "A quick look", "content-heading"));
+      panel.appendChild(el("p", "Sort a sample of the first rows by selecting a column heading.", "content-copy"));
+      panel.appendChild(makeTable(sampleRows, selectedDetail.columns, true));
+    }
+
+    function renderSchema() {
+      const panel = $("tab-panel");
+      panel.appendChild(el("h3", "Detected schema", "content-heading"));
+      panel.appendChild(el("p", "Types are inferred from the uploaded CSV. The primary key is used for individual row lookups.", "content-copy"));
+      const table = document.createElement("table");
+      table.className = "schema-table";
+      const head = document.createElement("thead");
+      const headRow = document.createElement("tr");
+      ["Column", "Detected type", "Key"].forEach(name => {
+        const th = el("th", name);
+        th.scope = "col";
+        headRow.appendChild(th);
+      });
+      head.appendChild(headRow);
+      table.appendChild(head);
+      const body = document.createElement("tbody");
+      selectedDetail.columns.forEach(column => {
+        const row = document.createElement("tr");
+        row.appendChild(el("td", column.name));
+        row.appendChild(el("td", column.type));
+        const keyCell = document.createElement("td");
+        if (column.name === selectedDetail.primary_key) keyCell.appendChild(el("span", "Primary key", "key-badge"));
+        else keyCell.textContent = "â€”";
+        row.appendChild(keyCell);
+        body.appendChild(row);
+      });
+      table.appendChild(body);
+      const wrapper = el("div", null, "table-scroll");
+      wrapper.appendChild(table);
+      panel.appendChild(wrapper);
+    }
+
+    function renderAskForm() {
+      const panel = $("tab-panel");
+      panel.appendChild(el("h3", "Ask your dataset", "content-heading"));
+      panel.appendChild(el("p", "Ask a question in plain English. DropAPI turns it into a validated filter.", "content-copy"));
+      const form = document.createElement("form");
+      form.className = "ask-toolbar";
+      const input = document.createElement("input");
+      input.className = "ask-input";
+      input.type = "text";
+      input.maxLength = 300;
+      input.value = askQuestion;
+      input.placeholder = "e.g. top 3 by price";
+      input.setAttribute("aria-label", "Ask a question about this dataset");
+      const askButton = el("button", "Ask", "primary-button");
+      askButton.type = "submit";
+      form.append(input, askButton);
+      form.addEventListener("submit", event => {
+        event.preventDefault();
+        askQuestion = input.value.trim();
+        runAsk();
+      });
+      panel.appendChild(form);
+
+      const suggestions = el("div", null, "suggestions");
+      suggestions.setAttribute("aria-label", "Suggested questions");
+      questionSuggestions(selectedDetail.columns, selectedDetail.primary_key).forEach(question => {
+        const button = el("button", question, "suggestion-chip");
+        button.type = "button";
+        button.addEventListener("click", () => {
+          askQuestion = question;
+          runAsk();
+        });
+        suggestions.appendChild(button);
+      });
+      panel.appendChild(suggestions);
+
+      if (askLoading) {
+        const skeleton = el("div", null, "skeleton-card skeleton-block");
+        skeleton.setAttribute("role", "status");
+        skeleton.setAttribute("aria-label", "Waiting for query results");
+        panel.appendChild(skeleton);
+        panel.appendChild(el("p", "Searching your dataâ€¦", "content-copy"));
+      } else if (askError) {
+        appendRetry(panel, askError, runAsk);
+      } else if (askResult) {
+        renderAskResult(panel);
+      } else {
+        appendEmptyState(panel, "Your data is ready", "Choose a suggestion or write a question to see matching rows.");
+      }
+    }
+
+    function renderAskResult(panel) {
+      const result = el("section", null, "ask-result");
+      const heading = el("div", null, "ask-result-heading");
+      heading.appendChild(el("h3", "Generated filter"));
+      const copyFilter = el("button", "Copy filter", "copy-button");
+      copyFilter.type = "button";
+      copyFilter.addEventListener("click", () =>
+        copyText(JSON.stringify(askResult.generated_filter, null, 2), "Filter copied")
+      );
+      heading.appendChild(copyFilter);
+      result.appendChild(heading);
+
+      const code = el("pre", JSON.stringify(askResult.generated_filter, null, 2), "filter-code");
+      result.appendChild(code);
+      if (Array.isArray(askResult.notes) && askResult.notes.length) {
+        const notes = el("div", null, "ask-notes");
+        askResult.notes.forEach(note => notes.appendChild(el("p", note)));
+        result.appendChild(notes);
+      }
+      result.appendChild(el("p",
+        Number(askResult.count).toLocaleString() + " matching row" + (askResult.count === 1 ? "" : "s"),
+        "ask-count"
+      ));
+      result.appendChild(makeTable(askResult.rows || [], selectedDetail.columns, false));
+      panel.appendChild(result);
+    }
+
+    async function runAsk() {
+      if (!selectedDatasetId || !askQuestion.trim()) return;
+      const datasetId = selectedDatasetId;
+      const question = askQuestion.trim();
+      const encodedQuestion = encodeURIComponent(question);
+      currentCurl = "curl \"" + API_URL + "/" + encodeURIComponent(datasetId) +
+        "/ask?q=" + encodedQuestion + "\"";
+      askQuestion = question;
+      askLoading = true;
+      askResult = null;
+      askError = "";
+      renderActiveTab();
+      try {
+        const result = await apiGet("/" + encodeURIComponent(datasetId) +
+          "/ask?q=" + encodedQuestion);
+        if (selectedDatasetId !== datasetId || $("drawer").hidden) return;
+        askResult = result;
+      } catch (error) {
+        if (selectedDatasetId !== datasetId || $("drawer").hidden) return;
+        askError = error.message;
+      } finally {
+        if (selectedDatasetId === datasetId && !$("drawer").hidden) {
+          askLoading = false;
+          renderActiveTab();
+        }
+      }
+    }
+
+    function renderDocs() {
+      const panel = $("tab-panel");
+      panel.appendChild(el("h3", "Interactive API docs", "content-heading"));
+      panel.appendChild(el("p", "Try the endpoints generated from this datasetâ€™s inferred schema.", "docs-note"));
+      const host = el("div", null, "swagger-host");
+      host.id = "swagger";
+      panel.appendChild(host);
+      loadSwagger();
+    }
+
+    function loadSwagger() {
+      const host = $("swagger");
+      if (!host || !selectedDatasetId) return;
+      host.replaceChildren();
+      if (typeof window.SwaggerUIBundle !== "function") {
+        appendRetry(host, "Swagger UI did not load. Check your connection and try again.", () => loadSwagger());
+        return;
+      }
+      try {
+        window.SwaggerUIBundle({
+          url: API_URL + "/" + encodeURIComponent(selectedDatasetId) + "/openapi.json",
+          dom_id: "#swagger",
+          deepLinking: true
+        });
+      } catch (error) {
+        appendRetry(host, "Could not load the API documentation: " + error.message, () => loadSwagger());
+      }
+    }
+
+    function renderActiveTab() {
+      const panel = $("tab-panel");
+      panel.replaceChildren();
+      if (!selectedDetail) {
+        renderPanelSkeleton();
+        return;
+      }
+      if (activeTab === "preview") renderPreview();
+      else if (activeTab === "schema") renderSchema();
+      else if (activeTab === "ask") renderAskForm();
+      else if (activeTab === "docs") renderDocs();
+    }
+
+    function activateTab(tabName) {
+      setActiveTab(tabName, true);
+    }
+
+    function getDatasetApiUrl() {
+      return selectedDatasetId
+        ? API_URL + "/" + encodeURIComponent(selectedDatasetId) + "/items"
+        : API_URL;
+    }
+
+    async function copyText(value, successMessage) {
+      try {
+        if (navigator.clipboard && window.isSecureContext) {
+          await navigator.clipboard.writeText(value);
+        } else {
+          const textarea = document.createElement("textarea");
+          textarea.value = value;
+          textarea.setAttribute("readonly", "");
+          textarea.style.position = "fixed";
+          textarea.style.opacity = "0";
+          document.body.appendChild(textarea);
+          textarea.select();
+          const copied = document.execCommand("copy");
+          textarea.remove();
+          if (!copied) throw new Error("Clipboard access is unavailable.");
+        }
+        showToast(successMessage);
+      } catch (error) {
+        showToast("Could not copy. Select and copy the text manually.");
+      }
+    }
+
+    function showToast(message) {
+      const toast = $("toast");
+      toast.textContent = message;
+      toast.hidden = false;
+      if (toastTimer) clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => { toast.hidden = true; }, 2200);
+    }
+
+    function updateThemeButton() {
+      const manual = document.documentElement.dataset.theme;
+      const dark = manual ? manual === "dark" : window.matchMedia("(prefers-color-scheme: dark)").matches;
+      $("theme-toggle").setAttribute("aria-label", dark ? "Switch to light mode" : "Switch to dark mode");
+      $("theme-toggle").title = dark ? "Switch to light mode" : "Switch to dark mode";
+    }
+
+    function toggleTheme() {
+      const manual = document.documentElement.dataset.theme;
+      const dark = manual ? manual === "dark" : window.matchMedia("(prefers-color-scheme: dark)").matches;
+      document.documentElement.dataset.theme = dark ? "light" : "dark";
+      updateThemeButton();
+    }
+
+    $("theme-toggle").addEventListener("click", toggleTheme);
+    window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", () => {
+      if (!document.documentElement.dataset.theme) updateThemeButton();
     });
-    t.appendChild(tr);
-  });
-  return t;
-}
 
-async function loadDatasets() {
-  clearTimeout(pollTimer);
-  let data;
-  try { data = await get("/datasets"); }
-  catch (e) { $("datasets").replaceChildren(el("p", "Could not reach the API: " + e.message, "err")); return; }
-  const box = $("datasets");
-  box.replaceChildren();
-  if (!data.datasets.length) box.appendChild(el("p", "No datasets yet. Upload a CSV with the command above.", "sub"));
-  data.datasets.forEach(d => {
-    const b = el("button", null, "ds");
-    b.type = "button";
-    b.setAttribute("aria-pressed", String(d.dataset_id === current));
-    b.appendChild(el("b", d.dataset_id));
-    b.appendChild(el("span", d.status + (d.row_count ? " · " + d.row_count + " rows" : ""), "st " + d.status));
-    if (d.error) b.appendChild(el("span", d.error, "err"));
-    if (d.status === "READY") b.onclick = () => select(d.dataset_id);
-    box.appendChild(b);
-  });
-  if (data.datasets.some(d => d.status === "PROCESSING")) pollTimer = setTimeout(loadDatasets, 3000);
-}
-
-async function select(id) {
-  current = id;
-  $("work").hidden = false;
-  $("dsname").textContent = id;
-  $("answer").replaceChildren();
-  $("q").value = "";
-  loadDatasets();
-  try {
-    const [detail, items] = await Promise.all([get("/datasets/" + id), get("/" + id + "/items?limit=10")]);
-    const cols = $("cols");
-    cols.replaceChildren();
-    detail.columns.forEach(c => {
-      const s = el("span", c.name + " ");
-      s.appendChild(el("i", c.type + (c.name === detail.primary_key ? ", key" : "")));
-      cols.appendChild(s);
+    $("refresh-button").addEventListener("click", () => refreshDatasets(true));
+    $("dataset-search").addEventListener("input", event => {
+      searchTerm = event.target.value.trim().toLowerCase();
+      renderDatasetList();
     });
-    $("rows").replaceChildren(renderTable(items.items));
-    makeChips(detail.columns, detail.primary_key);
-  } catch (e) { $("rows").replaceChildren(el("p", e.message, "err")); }
-  window.SwaggerUIBundle({ url: API + "/" + id + "/openapi.json", dom_id: "#swagger" });
-}
+    document.querySelectorAll("[data-filter]").forEach(button => {
+      button.addEventListener("click", () => {
+        listFilter = button.dataset.filter;
+        renderDatasetList();
+      });
+    });
 
-function makeChips(columns, pk) {
-  const chips = $("chips"), ideas = [];
-  const text = columns.find(c => c.type === "string" && c.values);
-  const num = columns.find(c => (c.type === "integer" || c.type === "number") && c.name !== pk);
-  if (text) ideas.push("rows in " + text.values[0]);
-  if (num) { ideas.push(num.name + " over 10"); ideas.push("top 3 by " + num.name); }
-  const bool = columns.find(c => c.type === "boolean");
-  if (bool) ideas.push("only " + bool.name);
-  chips.replaceChildren();
-  ideas.forEach(t => {
-    const b = el("button", t, "chip");
-    b.type = "button";
-    b.onclick = () => { $("q").value = t; ask(); };
-    chips.appendChild(b);
-  });
-}
+    const fileInput = $("csvfile");
+    const dropzone = $("dropzone");
+    fileInput.addEventListener("change", () => setSelectedFile(fileInput.files[0]));
+    $("upload-button").addEventListener("click", uploadCsv);
+    dropzone.addEventListener("keydown", event => {
+      if (event.key === "Enter" || event.key === " ") {
+        event.preventDefault();
+        fileInput.click();
+      }
+    });
+    ["dragenter", "dragover"].forEach(type => dropzone.addEventListener(type, event => {
+      event.preventDefault();
+      dropzone.classList.add("is-dragging");
+    }));
+    ["dragleave", "drop"].forEach(type => dropzone.addEventListener(type, event => {
+      event.preventDefault();
+      dropzone.classList.remove("is-dragging");
+    }));
+    dropzone.addEventListener("drop", event => {
+      const file = event.dataTransfer.files[0];
+      if (file) setSelectedFile(file);
+    });
 
-async function ask() {
-  const q = $("q").value.trim();
-  const out = $("answer");
-  if (!q) return;
-  out.replaceChildren(el("p", "Thinking…", "sub"));
-  try {
-    const r = await get("/" + current + "/ask?q=" + encodeURIComponent(q));
-    out.replaceChildren();
-    const plan = el("div", null, "box plan");
-    plan.appendChild(el("span", "Filter generated from your question (nothing else is ever run)"));
-    plan.appendChild(el("pre", JSON.stringify(r.generated_filter, null, 2)));
-    out.appendChild(plan);
-    r.notes.forEach(n => out.appendChild(el("p", n, "note")));
-    out.appendChild(el("p", r.count + " matching row" + (r.count === 1 ? "" : "s"), "sub"));
-    const wrap = el("div", null, "wrap");
-    wrap.appendChild(renderTable(r.rows));
-    out.appendChild(wrap);
-  } catch (e) { out.replaceChildren(el("p", e.message, "err")); }
-}
+    $("drawer-backdrop").addEventListener("click", closeDrawer);
+    $("close-drawer").addEventListener("click", closeDrawer);
+    $("copy-api-url").addEventListener("click", () =>
+      copyText(getDatasetApiUrl(), "API URL copied")
+    );
+    $("copy-curl").addEventListener("click", () =>
+      copyText(currentCurl || "curl \"" + getDatasetApiUrl() + "?limit=10\"", "curl command copied")
+    );
+    document.querySelectorAll("[data-tab]").forEach(button => {
+      button.addEventListener("click", () => activateTab(button.dataset.tab));
+    });
+    document.querySelector(".drawer-tabs").addEventListener("keydown", event => {
+      const tabs = Array.from(document.querySelectorAll("[data-tab]"));
+      const currentIndex = tabs.indexOf(document.activeElement);
+      let nextIndex = null;
+      if (event.key === "ArrowRight") nextIndex = (currentIndex + 1) % tabs.length;
+      if (event.key === "ArrowLeft") nextIndex = (currentIndex - 1 + tabs.length) % tabs.length;
+      if (event.key === "Home") nextIndex = 0;
+      if (event.key === "End") nextIndex = tabs.length - 1;
+      if (nextIndex !== null) {
+        event.preventDefault();
+        tabs[nextIndex].focus();
+        activateTab(tabs[nextIndex].dataset.tab);
+      }
+    });
+    $("drawer").addEventListener("keydown", event => {
+      if (event.key === "Escape") {
+        closeDrawer();
+        return;
+      }
+      if (event.key !== "Tab") return;
+      const focusable = Array.from($("drawer-panel").querySelectorAll(
+        'button:not([disabled]), input:not([disabled]), a[href], [tabindex="0"]'
+      )).filter(node => node.offsetParent !== null);
+      if (!focusable.length) return;
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+      if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault();
+        last.focus();
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault();
+        first.focus();
+      }
+    });
 
-$("askform").addEventListener("submit", ev => { ev.preventDefault(); ask(); });
-loadDatasets();
-</script>
+    updateThemeButton();
+    renderListSkeleton();
+    refreshDatasets(false);
+  </script>
 </body>
 </html>
