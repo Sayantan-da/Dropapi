@@ -11,6 +11,7 @@ Upload a file to S3. DropAPI detects its schema, stores its rows, and makes them
 ![Python 3.12](https://img.shields.io/badge/Python-3.12-3776AB?style=flat-square&logo=python&logoColor=white)
 ![AWS SAM](https://img.shields.io/badge/Deployed%20with-AWS%20SAM-FF9900?style=flat-square&logo=amazonaws&logoColor=white)
 ![Serverless](https://img.shields.io/badge/Architecture-Serverless-232F3E?style=flat-square&logo=awslambda&logoColor=white)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
 </div>
 
@@ -139,3 +140,7 @@ Empty the upload bucket first, then delete the stack. Emptying the bucket perman
 aws s3 rm s3://<UploadBucketName> --recursive --region ap-south-1
 sam delete --stack-name dropapi --region ap-south-1
 ```
+
+## License
+
+This project is licensed under the MIT License. See [LICENSE](LICENSE) for details.
